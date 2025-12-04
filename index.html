@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="중국어 번역과 병음을 한눈에 보는 번역기">
+    <meta name="theme-color" content="#4F46E5">
+    <title>병음 번역기</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇨🇳 병음 학습기</h1>
+            <p class="subtitle">중국어 학습을 위한 병음 표시 도구</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <label for="input-text">중국어 입력</label>
+                <textarea 
+                    id="input-text" 
+                    placeholder="중국어를 입력하세요..."
+                    rows="4"
+                ></textarea>
+                <div class="button-group">
+                    <button id="pinyin-btn" class="btn-primary">
+                        📖 병음 보기
+                    </button>
+                    <button id="speak-btn" class="btn-speak">
+                        🔊 듣기
+                    </button>
+                </div>
+            </div>
+
+            <div class="output-section" id="output-section" style="display: none;">
+                <div class="section-header">
+                    <label>번역</label>
+                    <div class="translation-controls">
+                        <select id="target-lang" class="lang-select">
+                            <option value="ko">한국어</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                            <option value="ru">Русский</option>
+                            <option value="pt">Português</option>
+                            <option value="it">Italiano</option>
+                            <option value="ar">العربية</option>
+                        </select>
+                        <button id="translate-btn" class="btn-secondary">번역</button>
+                    </div>
+                </div>
+                <div id="translation-output" class="translation-output" style="display: none;"></div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>번역 중...</p>
+            </div>
+
+            <div class="error" id="error" style="display: none;"></div>
+        </main>
+
+        <footer>
+            <p>💡 모바일에서 홈 화면에 추가하여 앱처럼 사용하세요</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.6/dist/index.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

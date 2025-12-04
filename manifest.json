@@ -1,0 +1,22 @@
+{
+  "name": "병음 학습기",
+  "short_name": "병음학습",
+  "description": "중국어 학습을 위한 병음 표시 및 번역 도구",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
