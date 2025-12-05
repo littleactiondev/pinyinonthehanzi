@@ -29,14 +29,17 @@
                         📖 병음 보기
                     </button>
                     <button id="speak-btn" class="btn-speak">
-                        🔊 듣기
+                        🔊 재생
+                    </button>
+                    <button id="stop-btn" class="btn-stop" style="display: none;">
+                        ⏹️ 정지
                     </button>
                 </div>
             </div>
 
             <div class="output-section" id="output-section" style="display: none;">
                 <div class="section-header">
-                    <label>번역</label>
+                    <label>번역하기</label>
                     <div class="translation-controls">
                         <select id="target-lang" class="lang-select">
                             <option value="ko">한국어</option>
@@ -53,7 +56,6 @@
                         <button id="translate-btn" class="btn-secondary">번역</button>
                     </div>
                 </div>
-                <div id="translation-output" class="translation-output" style="display: none;"></div>
             </div>
 
             <div class="loading" id="loading" style="display: none;">

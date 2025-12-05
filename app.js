@@ -12,6 +12,8 @@ const errorDiv = document.getElementById('error');
 let showingPinyin = false;
 let originalText = '';
 let isSpeaking = false;
+let isPaused = false;
+let currentUtterance = null;
 
 // 번역 API 호출 (무료) - MyMemory 사용
 async function translateText(text, targetLang = 'ko') {
@@ -71,28 +73,41 @@ async function translateText(text, targetLang = 'ko') {
 
 // TTS 음성 재생
 function speakChinese(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = 0.8; // 천천히
-    utterance.pitch = 1;
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    currentUtterance.lang = 'zh-CN';
+    currentUtterance.rate = 0.8; // 천천히
+    currentUtterance.pitch = 1;
     
-    utterance.onend = () => {
+    currentUtterance.onend = () => {
         isSpeaking = false;
-        speakBtn.textContent = '🔊 듣기';
+        isPaused = false;
+        speakBtn.textContent = '🔊 재생';
+        stopBtn.style.display = 'none';
     };
     
-    utterance.onerror = () => {
+    currentUtterance.onerror = () => {
         isSpeaking = false;
-        speakBtn.textContent = '🔊 듣기';
+        isPaused = false;
+        speakBtn.textContent = '🔊 재생';
+        stopBtn.style.display = 'none';
     };
     
-    window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(currentUtterance);
     isSpeaking = true;
-    speakBtn.textContent = '⏸️ 정지';
+    isPaused = false;
+    speakBtn.textContent = '⏸️ 일시정지';
+    stopBtn.style.display = 'inline-block';
 }
 
+// 페이지 종료 시 TTS 정지
+window.addEventListener('beforeunload', () => {
+    if (isSpeaking) {
+        window.speechSynthesis.cancel();
+    }
+});
+
 // 중국어 텍스트를 병음과 함께 HTML로 변환
-function createPinyinHTML(chineseText) {
+function createPinyinHTML(chineseText, translation = null) {
     let html = '';
     
     for (const char of chineseText) {
@@ -104,6 +119,33 @@ function createPinyinHTML(chineseText) {
         } else {
             html += char;
         }
+    }
+    
+    // 번역이 있으면 아래에 추가
+    if (translation) {
+        html += `<div class="translation-below">${translation}</div>`;
+    }
+    
+    return html;
+}
+
+// 중국어 텍스트를 병음 없이 같은 스타일로 변환
+function createChineseOnlyHTML(chineseText, translation = null) {
+    let html = '';
+    
+    for (const char of chineseText) {
+        // 한자인지 확인
+        if (/[\u4e00-\u9fa5]/.test(char)) {
+            // ruby 태그는 사용하지만 rt는 비워둠 (공간 유지)
+            html += `<ruby>${char}<rt style="visibility: hidden;">.</rt></ruby>`;
+        } else {
+            html += char;
+        }
+    }
+    
+    // 번역이 있으면 아래에 추가
+    if (translation) {
+        html += `<div class="translation-below">${translation}</div>`;
     }
     
     return html;
@@ -142,19 +184,25 @@ pinyinBtn.addEventListener('click', () => {
         
         showOutput();
     } else {
-        // 원문 표시
-        inputText.style.display = 'block';
+        // 원문 표시 (병음만 숨기고 레이아웃 유지)
         const pinyinDisplay = document.getElementById('pinyin-display');
         if (pinyinDisplay) {
-            pinyinDisplay.style.display = 'none';
+            // 기존 번역 추출
+            const existingTranslation = pinyinDisplay.querySelector('.translation-below');
+            const translationText = existingTranslation ? existingTranslation.textContent : null;
+            
+            const chineseOnlyHTML = createChineseOnlyHTML(originalText, translationText);
+            pinyinDisplay.innerHTML = chineseOnlyHTML;
         }
         pinyinBtn.textContent = '📖 병음 보기';
         showingPinyin = false;
     }
 });
 
-// TTS 버튼 클릭
+// TTS 재생/일시정지 버튼
 const speakBtn = document.getElementById('speak-btn');
+const stopBtn = document.getElementById('stop-btn');
+
 if (speakBtn) {
     speakBtn.addEventListener('click', () => {
         const text = originalText || inputText.value.trim();
@@ -166,15 +214,31 @@ if (speakBtn) {
         
         hideError();
         
-        if (isSpeaking) {
-            // 재생 중이면 정지
-            window.speechSynthesis.cancel();
-            isSpeaking = false;
-            speakBtn.textContent = '🔊 듣기';
+        if (isSpeaking && !isPaused) {
+            // 재생 중이면 일시정지
+            window.speechSynthesis.pause();
+            isPaused = true;
+            speakBtn.textContent = '▶️ 재생';
+        } else if (isPaused) {
+            // 일시정지 중이면 재개
+            window.speechSynthesis.resume();
+            isPaused = false;
+            speakBtn.textContent = '⏸️ 일시정지';
         } else {
-            // 정지 중이면 재생
+            // 정지 중이면 새로 재생
             speakChinese(text);
         }
+    });
+}
+
+// TTS 정지 버튼
+if (stopBtn) {
+    stopBtn.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        isPaused = false;
+        speakBtn.textContent = '🔊 재생';
+        stopBtn.style.display = 'none';
     });
 }
 
@@ -188,16 +252,46 @@ translateBtn.addEventListener('click', async () => {
     }
     
     hideError();
-    translationOutput.innerHTML = '<div class="loading"><div class="spinner"></div><p>번역 중...</p></div>';
-    translationOutput.style.display = 'block';
+    
+    // 병음 디스플레이에 로딩 표시
+    const pinyinDisplay = document.getElementById('pinyin-display');
+    if (pinyinDisplay) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'translation-below loading-translation';
+        loadingDiv.innerHTML = '<div class="spinner-small"></div> 번역 중...';
+        
+        // 기존 번역 제거
+        const existingTranslation = pinyinDisplay.querySelector('.translation-below');
+        if (existingTranslation) {
+            existingTranslation.remove();
+        }
+        
+        pinyinDisplay.appendChild(loadingDiv);
+    }
     
     try {
         const targetLang = targetLangSelect.value;
         const translated = await translateText(text, targetLang);
         
-        translationOutput.innerHTML = `<p>${translated}</p>`;
+        // 병음 디스플레이 업데이트
+        if (pinyinDisplay) {
+            const loadingDiv = pinyinDisplay.querySelector('.loading-translation');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+            
+            // 현재 병음 상태에 따라 업데이트
+            if (showingPinyin) {
+                pinyinDisplay.innerHTML = createPinyinHTML(text, translated);
+            } else {
+                pinyinDisplay.innerHTML = createChineseOnlyHTML(text, translated);
+            }
+        }
     } catch (error) {
-        translationOutput.style.display = 'none';
+        const loadingDiv = pinyinDisplay?.querySelector('.loading-translation');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
         showError('번역 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         console.error(error);
     }
