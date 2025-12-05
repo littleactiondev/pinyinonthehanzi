@@ -4,6 +4,7 @@ import { translateSentences } from './translation.js';
 import { createPinyinHTML, createChineseOnlyHTML, splitIntoSentences } from './pinyin.js';
 import { speakChinese, pauseTTS, resumeTTS, stopTTS, getTTSState, cleanupTTS } from './tts.js';
 import { showError, hideError, showSection, createLoadingOverlay } from './ui.js';
+import { fetchChineseNews, createNewsHTML } from './news.js';
 
 // DOM 요소
 const inputText = document.getElementById('input-text');
@@ -14,6 +15,10 @@ const translateBtn = document.getElementById('translate-btn');
 const targetLangSelect = document.getElementById('target-lang');
 const outputSection = document.getElementById('output-section');
 const errorDiv = document.getElementById('error');
+const newsBtn = document.getElementById('news-btn');
+const newsModal = document.getElementById('news-modal');
+const closeModal = document.getElementById('close-modal');
+const newsContainer = document.getElementById('news-container');
 
 // 상태 관리
 let showingPinyin = false;
@@ -147,11 +152,51 @@ async function handleTranslate() {
     }
 }
 
+/**
+ * 뉴스 모달 열기
+ */
+async function openNewsModal() {
+    newsModal.style.display = 'flex';
+    newsContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>뉴스를 불러오는 중...</p></div>';
+    
+    try {
+        const newsItems = await fetchChineseNews();
+        newsContainer.innerHTML = createNewsHTML(newsItems);
+        
+        // 뉴스 사용 버튼 이벤트
+        document.querySelectorAll('.btn-use-news').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const text = e.target.getAttribute('data-text');
+                inputText.value = text;
+                newsModal.style.display = 'none';
+            });
+        });
+    } catch (error) {
+        newsContainer.innerHTML = '<p class="no-news">뉴스를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>';
+    }
+}
+
+/**
+ * 뉴스 모달 닫기
+ */
+function closeNewsModal() {
+    newsModal.style.display = 'none';
+}
+
 // 이벤트 리스너 등록
 pinyinBtn.addEventListener('click', togglePinyin);
 speakBtn.addEventListener('click', toggleSpeak);
 stopBtn.addEventListener('click', handleStop);
 translateBtn.addEventListener('click', handleTranslate);
+newsBtn.addEventListener('click', openNewsModal);
+closeModal.addEventListener('click', closeNewsModal);
+
+// 모달 외부 클릭 시 닫기
+newsModal.addEventListener('click', (e) => {
+    if (e.target === newsModal) {
+        closeNewsModal();
+    }
+});
 
 // Enter 키로 병음 보기
 inputText.addEventListener('keydown', (e) => {

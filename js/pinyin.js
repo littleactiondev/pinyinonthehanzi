@@ -1,5 +1,11 @@
 // 병음 변환 관련 기능
 
+// 숫자 병음 매핑
+const NUMBER_PINYIN = {
+    '0': 'líng', '1': 'yī', '2': 'èr', '3': 'sān', '4': 'sì',
+    '5': 'wǔ', '6': 'liù', '7': 'qī', '8': 'bā', '9': 'jiǔ',
+};
+
 /**
  * 중국어 텍스트를 문장 단위로 분리
  * @param {string} text - 중국어 텍스트
@@ -7,6 +13,27 @@
  */
 export function splitIntoSentences(text) {
     return text.match(/[^。！？.!?]+[。！？.!?]*/g) || [text];
+}
+
+/**
+ * 문자의 병음 가져오기 (한자 또는 숫자)
+ * @param {string} char - 문자
+ * @returns {string} 병음
+ */
+function getPinyin(char) {
+    // 숫자인 경우
+    if (/[0-9]/.test(char)) {
+        return NUMBER_PINYIN[char] || char;
+    }
+    
+    // 한자인 경우
+    if (/[\u4e00-\u9fa5]/.test(char)) {
+        return window.pinyinPro 
+            ? window.pinyinPro.pinyin(char, { toneType: 'symbol' }) 
+            : char;
+    }
+    
+    return null;
 }
 
 /**
@@ -24,12 +51,10 @@ export function createPinyinHTML(chineseText, translations = null) {
         
         html += '<div class="sentence-block">';
         
-        // 병음 + 한자
+        // 병음 + 한자/숫자
         for (const char of sentence) {
-            if (/[\u4e00-\u9fa5]/.test(char)) {
-                const pinyin = window.pinyinPro 
-                    ? window.pinyinPro.pinyin(char, { toneType: 'symbol' }) 
-                    : char;
+            const pinyin = getPinyin(char);
+            if (pinyin) {
                 html += `<ruby>${char}<rt>${pinyin}</rt></ruby>`;
             } else {
                 html += char;
@@ -62,9 +87,10 @@ export function createChineseOnlyHTML(chineseText, translations = null) {
         
         html += '<div class="sentence-block">';
         
-        // 한자만 (병음 공간 유지)
+        // 한자/숫자만 (병음 공간 유지)
         for (const char of sentence) {
-            if (/[\u4e00-\u9fa5]/.test(char)) {
+            const pinyin = getPinyin(char);
+            if (pinyin) {
                 html += `<ruby>${char}<rt style="visibility: hidden;">.</rt></ruby>`;
             } else {
                 html += char;

@@ -4,6 +4,13 @@ export const API_CONFIG = {
     TRANSLATION_DELAY: 300, // API 제한 방지 대기 시간 (ms)
 };
 
+export const NEWS_CONFIG = {
+    RSS_FEED: 'http://www.people.com.cn/rss/world.xml', // 인민일보 국제뉴스
+    RSS_TO_JSON_API: 'https://api.rss2json.com/v1/api.json',
+    API_KEY: 'public', // 무료 버전
+    COUNT: 10, // 가져올 기사 수
+};
+
 export const TTS_CONFIG = {
     LANG: 'zh-CN',
     RATE: 0.8, // 천천히

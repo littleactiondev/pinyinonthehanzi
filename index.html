@@ -18,10 +18,13 @@
 
         <main>
             <div class="input-section">
-                <label for="input-text">중국어 입력</label>
+                <div class="input-header">
+                    <label for="input-text">중국어 입력</label>
+                    <button id="news-btn" class="btn-news">📰 오늘의 뉴스</button>
+                </div>
                 <textarea 
                     id="input-text" 
-                    placeholder="중국어를 입력하세요..."
+                    placeholder="중국어를 입력하거나 '오늘의 뉴스' 버튼을 클릭하세요..."
                     rows="4"
                 ></textarea>
                 <div class="button-group">
@@ -34,6 +37,22 @@
                     <button id="stop-btn" class="btn-stop" style="display: none;">
                         ⏹️ 정지
                     </button>
+                </div>
+            </div>
+
+            <!-- 뉴스 모달 -->
+            <div id="news-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>📰 오늘의 중국 뉴스</h2>
+                        <button id="close-modal" class="btn-close">✕</button>
+                    </div>
+                    <div id="news-container" class="news-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>뉴스를 불러오는 중...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
