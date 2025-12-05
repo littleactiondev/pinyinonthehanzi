@@ -156,11 +156,13 @@ async function handleTranslate() {
  * 뉴스 모달 열기
  */
 async function openNewsModal() {
-    newsModal.style.display = 'flex';
+    console.log('Opening news modal...');
+    newsModal.classList.add('show');
     newsContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>뉴스를 불러오는 중...</p></div>';
     
     try {
         const newsItems = await fetchChineseNews();
+        console.log('News items:', newsItems);
         newsContainer.innerHTML = createNewsHTML(newsItems);
         
         // 뉴스 사용 버튼 이벤트
@@ -168,10 +170,11 @@ async function openNewsModal() {
             btn.addEventListener('click', (e) => {
                 const text = e.target.getAttribute('data-text');
                 inputText.value = text;
-                newsModal.style.display = 'none';
+                closeNewsModal();
             });
         });
     } catch (error) {
+        console.error('News error:', error);
         newsContainer.innerHTML = '<p class="no-news">뉴스를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>';
     }
 }
@@ -180,7 +183,8 @@ async function openNewsModal() {
  * 뉴스 모달 닫기
  */
 function closeNewsModal() {
-    newsModal.style.display = 'none';
+    console.log('Closing news modal...');
+    newsModal.classList.remove('show');
 }
 
 // 이벤트 리스너 등록
