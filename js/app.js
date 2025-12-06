@@ -12,6 +12,7 @@ const pinyinBtn = document.getElementById('pinyin-btn');
 const speakBtn = document.getElementById('speak-btn');
 const stopBtn = document.getElementById('stop-btn');
 const translateBtn = document.getElementById('translate-btn');
+const clearTranslationBtn = document.getElementById('clear-translation-btn');
 const targetLangSelect = document.getElementById('target-lang');
 const outputSection = document.getElementById('output-section');
 const errorDiv = document.getElementById('error');
@@ -145,11 +146,34 @@ async function handleTranslate() {
         }
         
         currentTranslations = translations;
+        
+        // 번역 지우기 버튼 표시
+        clearTranslationBtn.style.display = 'inline-block';
     } catch (error) {
         loadingOverlay.remove();
         showError(errorDiv, UI_TEXT.ERRORS.TRANSLATION_FAILED);
         console.error(error);
     }
+}
+
+/**
+ * 번역 지우기
+ */
+function clearTranslation() {
+    const pinyinDisplay = document.getElementById('pinyin-display');
+    if (!pinyinDisplay) return;
+    
+    currentTranslations = null;
+    
+    // 현재 병음 상태에 따라 업데이트 (번역 없이)
+    if (showingPinyin) {
+        pinyinDisplay.innerHTML = createPinyinHTML(originalText);
+    } else {
+        pinyinDisplay.innerHTML = createChineseOnlyHTML(originalText);
+    }
+    
+    // 번역 지우기 버튼 숨김
+    clearTranslationBtn.style.display = 'none';
 }
 
 /**
@@ -192,6 +216,7 @@ pinyinBtn.addEventListener('click', togglePinyin);
 speakBtn.addEventListener('click', toggleSpeak);
 stopBtn.addEventListener('click', handleStop);
 translateBtn.addEventListener('click', handleTranslate);
+clearTranslationBtn.addEventListener('click', clearTranslation);
 newsBtn.addEventListener('click', openNewsModal);
 closeModal.addEventListener('click', closeNewsModal);
 
