@@ -211,6 +211,41 @@ function closeNewsModal() {
     newsModal.classList.remove('show');
 }
 
+/**
+ * 첫 화면으로 리셋
+ */
+function resetToHome() {
+    // 입력 초기화
+    inputText.value = '';
+    inputText.style.display = 'block';
+    
+    // 병음 디스플레이 제거
+    const pinyinDisplay = document.getElementById('pinyin-display');
+    if (pinyinDisplay) {
+        pinyinDisplay.remove();
+    }
+    
+    // 상태 초기화
+    showingPinyin = false;
+    originalText = '';
+    currentTranslations = null;
+    
+    // 버튼 초기화
+    pinyinBtn.textContent = UI_TEXT.BUTTONS.PINYIN_SHOW;
+    speakBtn.textContent = UI_TEXT.BUTTONS.SPEAK_PLAY;
+    stopBtn.style.display = 'none';
+    clearTranslationBtn.style.display = 'none';
+    
+    // 출력 섹션 숨김
+    outputSection.style.display = 'none';
+    
+    // TTS 정지
+    stopTTS(speakBtn, stopBtn);
+    
+    // 에러 숨김
+    hideError(errorDiv);
+}
+
 // 이벤트 리스너 등록
 pinyinBtn.addEventListener('click', togglePinyin);
 speakBtn.addEventListener('click', toggleSpeak);
@@ -219,6 +254,9 @@ translateBtn.addEventListener('click', handleTranslate);
 clearTranslationBtn.addEventListener('click', clearTranslation);
 newsBtn.addEventListener('click', openNewsModal);
 closeModal.addEventListener('click', closeNewsModal);
+
+// 타이틀 클릭 시 홈으로
+document.getElementById('app-title').addEventListener('click', resetToHome);
 
 // 모달 외부 클릭 시 닫기
 newsModal.addEventListener('click', (e) => {
