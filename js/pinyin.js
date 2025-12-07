@@ -37,6 +37,23 @@ function getPinyin(char) {
 }
 
 /**
+ * 병음 없이 중국어만 표시 (한 줄씩)
+ * @param {string} chineseText - 중국어 텍스트
+ * @returns {string} HTML 문자열
+ */
+export function createPlainChineseHTML(chineseText) {
+    const sentences = splitIntoSentences(chineseText);
+    let html = '';
+    
+    sentences.forEach((sentence) => {
+        if (!sentence.trim()) return;
+        html += `<div class="sentence-line">${sentence}</div>`;
+    });
+    
+    return html;
+}
+
+/**
  * 중국어 텍스트를 병음과 함께 HTML로 변환 (문장별 번역 포함)
  * @param {string} chineseText - 중국어 텍스트
  * @param {string[]|null} translations - 번역 배열 (선택)

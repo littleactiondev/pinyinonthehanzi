@@ -8,13 +8,7 @@ import { fetchChineseNews, createNewsHTML } from './news.js';
 
 // DOM 요소
 const inputText = document.getElementById('input-text');
-const pinyinBtn = document.getElementById('pinyin-btn');
-const speakBtn = document.getElementById('speak-btn');
-const stopBtn = document.getElementById('stop-btn');
-const translateBtn = document.getElementById('translate-btn');
-const clearTranslationBtn = document.getElementById('clear-translation-btn');
-const targetLangSelect = document.getElementById('target-lang');
-const outputSection = document.getElementById('output-section');
+const startStudyBtn = document.getElementById('start-study-btn');
 const errorDiv = document.getElementById('error');
 const newsBtn = document.getElementById('news-btn');
 const newsModal = document.getElementById('news-modal');
@@ -22,14 +16,20 @@ const closeModal = document.getElementById('close-modal');
 const newsContainer = document.getElementById('news-container');
 
 // 상태 관리
-let showingPinyin = false;
 let originalText = '';
 let currentTranslations = null;
 
+// 학습 모드 상태
+let studyMode = {
+    showPinyin: false,
+    showTranslation: false,
+    isPlaying: false,
+};
+
 /**
- * 병음 보기/원문 보기 토글
+ * 학습 시작
  */
-function togglePinyin() {
+function startStudy() {
     const text = inputText.value.trim();
     
     if (!text) {
@@ -40,35 +40,78 @@ function togglePinyin() {
     hideError(errorDiv);
     originalText = text;
     
-    if (!showingPinyin) {
-        // 병음 표시
-        const pinyinHTML = createPinyinHTML(text, currentTranslations);
-        inputText.style.display = 'none';
-        
-        // 병음 출력 영역 생성
-        let pinyinDisplay = document.getElementById('pinyin-display');
-        if (!pinyinDisplay) {
-            pinyinDisplay = document.createElement('div');
-            pinyinDisplay.id = 'pinyin-display';
-            pinyinDisplay.className = 'pinyin-output';
-            inputText.parentNode.insertBefore(pinyinDisplay, inputText.nextSibling);
-        }
-        
-        pinyinDisplay.innerHTML = pinyinHTML;
-        pinyinDisplay.style.display = 'block';
-        pinyinBtn.textContent = UI_TEXT.BUTTONS.PINYIN_HIDE;
-        showingPinyin = true;
-        
-        showSection(outputSection);
+    // 입력 섹션 숨기기
+    document.querySelector('.input-section').style.display = 'none';
+    
+    // 학습 섹션 표시
+    const studySection = document.getElementById('study-section');
+    const studyContent = document.getElementById('study-content');
+    studySection.style.display = 'block';
+    
+    // 초기 상태: 병음 없이 중국어만 표시
+    studyContent.innerHTML = createPlainChineseHTML(text);
+    
+    // 상태 초기화
+    studyMode = { showPinyin: false, showTranslation: false, isPlaying: false };
+}
+
+/**
+ * 병음 토글
+ */
+function togglePinyin() {
+    studyMode.showPinyin = !studyMode.showPinyin;
+    updateStudyContent();
+    
+    const btn = document.getElementById('pinyin-toggle-btn');
+    btn.classList.toggle('active', studyMode.showPinyin);
+}
+
+/**
+ * 번역 토글
+ */
+function toggleTranslation() {
+    if (!studyMode.showTranslation && !currentTranslations) {
+        // 번역이 없으면 번역 실행
+        translateContent();
     } else {
-        // 원문 표시 (병음만 숨기고 레이아웃 유지)
-        const pinyinDisplay = document.getElementById('pinyin-display');
-        if (pinyinDisplay) {
-            const chineseOnlyHTML = createChineseOnlyHTML(originalText, currentTranslations);
-            pinyinDisplay.innerHTML = chineseOnlyHTML;
-        }
-        pinyinBtn.textContent = UI_TEXT.BUTTONS.PINYIN_SHOW;
-        showingPinyin = false;
+        studyMode.showTranslation = !studyMode.showTranslation;
+        updateStudyContent();
+        
+        const btn = document.getElementById('translate-toggle-btn');
+        btn.classList.toggle('active', studyMode.showTranslation);
+    }
+}
+
+/**
+ * 재생 토글
+ */
+function toggleSpeak() {
+    const { isSpeaking, isPaused } = getTTSState();
+    const btn = document.getElementById('speak-toggle-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    
+    if (isSpeaking && !isPaused) {
+        pauseTTS(btn);
+        btn.textContent = '▶️ 재생';
+    } else if (isPaused) {
+        resumeTTS(btn);
+        btn.textContent = '⏸️ 일시정지';
+    } else {
+        speakChinese(originalText, btn, stopBtn);
+        btn.textContent = '⏸️ 일시정지';
+    }
+}
+
+/**
+ * 학습 콘텐츠 업데이트
+ */
+function updateStudyContent() {
+    const studyContent = document.getElementById('study-content');
+    
+    if (studyMode.showPinyin) {
+        studyContent.innerHTML = createPinyinHTML(originalText, studyMode.showTranslation ? currentTranslations : null);
+    } else {
+        studyContent.innerHTML = createChineseOnlyHTML(originalText, studyMode.showTranslation ? currentTranslations : null);
     }
 }
 
@@ -77,71 +120,33 @@ function togglePinyin() {
 /**
  * 번역 실행
  */
-async function handleTranslate() {
-    const text = originalText || inputText.value.trim();
-    
-    if (!text) {
-        showError(errorDiv, UI_TEXT.ERRORS.NO_TEXT_FOR_SPEAK);
-        return;
-    }
-    
-    hideError(errorDiv);
-    
-    const pinyinDisplay = document.getElementById('pinyin-display');
-    if (!pinyinDisplay) return;
+async function translateContent() {
+    const studyContent = document.getElementById('study-content');
+    const btn = document.getElementById('translate-toggle-btn');
     
     // 로딩 표시
-    const loadingOverlay = createLoadingOverlay();
-    pinyinDisplay.appendChild(loadingOverlay);
+    btn.textContent = '번역 중...';
+    btn.disabled = true;
     
     try {
-        const targetLang = targetLangSelect.value;
-        
-        // 문장 단위로 나누기
-        const sentences = splitIntoSentences(text);
-        
-        // 각 문장 번역
+        const targetLang = 'ko'; // 기본 한국어
+        const sentences = splitIntoSentences(originalText);
         const translations = await translateSentences(sentences, targetLang);
         
-        // 로딩 제거
-        loadingOverlay.remove();
-        
-        // 현재 병음 상태에 따라 업데이트
-        if (showingPinyin) {
-            pinyinDisplay.innerHTML = createPinyinHTML(text, translations);
-        } else {
-            pinyinDisplay.innerHTML = createChineseOnlyHTML(text, translations);
-        }
-        
         currentTranslations = translations;
+        studyMode.showTranslation = true;
         
-        // 번역 지우기 버튼 표시
-        clearTranslationBtn.style.display = 'inline-block';
+        updateStudyContent();
+        
+        btn.textContent = '번역';
+        btn.classList.add('active');
+        btn.disabled = false;
     } catch (error) {
-        loadingOverlay.remove();
         showError(errorDiv, UI_TEXT.ERRORS.TRANSLATION_FAILED);
+        btn.textContent = '번역';
+        btn.disabled = false;
         console.error(error);
     }
-}
-
-/**
- * 번역 지우기
- */
-function clearTranslation() {
-    const pinyinDisplay = document.getElementById('pinyin-display');
-    if (!pinyinDisplay) return;
-    
-    currentTranslations = null;
-    
-    // 현재 병음 상태에 따라 업데이트 (번역 없이)
-    if (showingPinyin) {
-        pinyinDisplay.innerHTML = createPinyinHTML(originalText);
-    } else {
-        pinyinDisplay.innerHTML = createChineseOnlyHTML(originalText);
-    }
-    
-    // 번역 지우기 버튼 숨김
-    clearTranslationBtn.style.display = 'none';
 }
 
 /**
@@ -210,34 +215,28 @@ function resetToHome() {
 }
 
 // 이벤트 리스너 등록
-console.log('Setting up event listeners...');
-console.log('newsBtn exists:', !!newsBtn);
-
-if (pinyinBtn) {
-    pinyinBtn.addEventListener('click', togglePinyin);
-}
-
-if (translateBtn) {
-    translateBtn.addEventListener('click', handleTranslate);
-}
-
-if (clearTranslationBtn) {
-    clearTranslationBtn.addEventListener('click', clearTranslation);
+if (startStudyBtn) {
+    startStudyBtn.addEventListener('click', startStudy);
 }
 
 if (newsBtn) {
-    console.log('Adding click listener to news button');
-    newsBtn.addEventListener('click', (e) => {
-        console.log('News button clicked!', e);
-        openNewsModal();
-    });
-} else {
-    console.error('newsBtn is null!');
+    newsBtn.addEventListener('click', openNewsModal);
 }
 
 if (closeModal) {
     closeModal.addEventListener('click', closeNewsModal);
 }
+
+// 학습 모드 버튼들
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'pinyin-toggle-btn') {
+        togglePinyin();
+    } else if (e.target.id === 'translate-toggle-btn') {
+        toggleTranslation();
+    } else if (e.target.id === 'speak-toggle-btn') {
+        toggleSpeak();
+    }
+});
 
 // 타이틀 클릭 시 홈으로
 const appTitle = document.getElementById('app-title');

@@ -19,19 +19,28 @@
         <main>
             <div class="input-section">
                 <div class="input-header">
-                    <label for="input-text">중국어 입력</label>
                     <button id="news-btn" class="btn-news">📰 오늘의 뉴스</button>
                 </div>
                 <textarea 
                     id="input-text" 
-                    placeholder="중국어를 입력하거나 '오늘의 뉴스' 버튼을 클릭하세요..."
-                    rows="4"
+                    placeholder="중국어를 입력하거나 '오늘의 뉴스'를 클릭하세요..."
+                    rows="6"
                 ></textarea>
                 <div class="button-group">
-                    <button id="pinyin-btn" class="btn-primary">
-                        📖 읽기
+                    <button id="start-study-btn" class="btn-primary">
+                        📖 학습 시작
                     </button>
                 </div>
+            </div>
+
+            <!-- 학습 모드 -->
+            <div id="study-section" class="study-section" style="display: none;">
+                <div class="study-toolbar">
+                    <button id="pinyin-toggle-btn" class="btn-tool">병음</button>
+                    <button id="translate-toggle-btn" class="btn-tool">번역</button>
+                    <button id="speak-toggle-btn" class="btn-tool">재생</button>
+                </div>
+                <div id="study-content" class="study-content"></div>
             </div>
 
             <!-- 뉴스 모달 -->
