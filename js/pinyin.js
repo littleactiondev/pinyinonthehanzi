@@ -44,7 +44,7 @@ function getPinyin(char) {
 }
 
 /**
- * 병음 없이 중국어만 표시 (한 줄씩)
+ * 병음 없이 중국어만 표시 (한 줄씩, 듣기 버튼 포함)
  * @param {string} chineseText - 중국어 텍스트
  * @returns {string} HTML 문자열
  */
@@ -52,12 +52,28 @@ export function createPlainChineseHTML(chineseText) {
     const sentences = splitIntoSentences(chineseText);
     let html = '';
     
-    sentences.forEach((sentence) => {
+    sentences.forEach((sentence, index) => {
         if (!sentence.trim()) return;
-        html += `<div class="sentence-line">${sentence}</div>`;
+        html += `
+            <div class="sentence-line" data-index="${index}">
+                <div class="sentence-text">${sentence}</div>
+                <button class="btn-play-sentence" data-text="${escapeHtml(sentence)}" title="이 문장 듣기">
+                    🔊
+                </button>
+            </div>
+        `;
     });
     
     return html;
+}
+
+/**
+ * HTML 이스케이프
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 /**
@@ -73,9 +89,12 @@ export function createPinyinHTML(chineseText, translations = null) {
     sentences.forEach((sentence, index) => {
         if (!sentence.trim()) return;
         
-        html += '<div class="sentence-block">';
+        html += `<div class="sentence-block" data-index="${index}">`;
+        
+        html += '<div class="sentence-with-play">';
         
         // 병음 + 한자/숫자
+        html += '<div class="sentence-text-pinyin">';
         for (const char of sentence) {
             const pinyin = getPinyin(char);
             if (pinyin) {
@@ -84,6 +103,12 @@ export function createPinyinHTML(chineseText, translations = null) {
                 html += char;
             }
         }
+        html += '</div>';
+        
+        // 듣기 버튼
+        html += `<button class="btn-play-sentence" data-text="${escapeHtml(sentence)}" title="이 문장 듣기">🔊</button>`;
+        
+        html += '</div>';
         
         // 번역
         if (translations && translations[index]) {
@@ -94,6 +119,15 @@ export function createPinyinHTML(chineseText, translations = null) {
     });
     
     return html;
+}
+
+/**
+ * HTML 이스케이프
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 /**
@@ -109,9 +143,12 @@ export function createChineseOnlyHTML(chineseText, translations = null) {
     sentences.forEach((sentence, index) => {
         if (!sentence.trim()) return;
         
-        html += '<div class="sentence-block">';
+        html += `<div class="sentence-block" data-index="${index}">`;
+        
+        html += '<div class="sentence-with-play">';
         
         // 한자/숫자만 (병음 공간 유지)
+        html += '<div class="sentence-text-pinyin">';
         for (const char of sentence) {
             const pinyin = getPinyin(char);
             if (pinyin) {
@@ -120,6 +157,12 @@ export function createChineseOnlyHTML(chineseText, translations = null) {
                 html += char;
             }
         }
+        html += '</div>';
+        
+        // 듣기 버튼
+        html += `<button class="btn-play-sentence" data-text="${escapeHtml(sentence)}" title="이 문장 듣기">🔊</button>`;
+        
+        html += '</div>';
         
         // 번역
         if (translations && translations[index]) {

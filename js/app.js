@@ -256,8 +256,28 @@ document.addEventListener('click', (e) => {
         stopSpeak();
     } else if (target.id === 'back-btn') {
         resetToHome();
+    } else if (target.classList.contains('btn-play-sentence')) {
+        // 문장별 듣기
+        const text = target.getAttribute('data-text');
+        if (text) {
+            playSentence(text);
+        }
     }
 });
+
+/**
+ * 개별 문장 재생
+ */
+function playSentence(text) {
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    
+    window.speechSynthesis.speak(utterance);
+}
 
 // 타이틀 클릭 시 홈으로
 const appTitle = document.getElementById('app-title');
