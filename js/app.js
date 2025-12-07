@@ -220,14 +220,7 @@ if (startStudyBtn) {
 }
 
 if (newsBtn) {
-    console.log('News button found, adding event listener');
-    newsBtn.addEventListener('click', () => {
-        console.log('News button CLICKED!');
-        alert('뉴스 버튼 클릭됨!');
-        openNewsModal();
-    });
-} else {
-    console.error('News button NOT found!');
+    newsBtn.addEventListener('click', openNewsModal);
 }
 
 if (closeModal) {
