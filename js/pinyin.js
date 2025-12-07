@@ -12,7 +12,14 @@ const NUMBER_PINYIN = {
  * @returns {string[]} 문장 배열
  */
 export function splitIntoSentences(text) {
-    return text.match(/[^。！？.!?]+[。！？.!?]*/g) || [text];
+    // 숫자 뒤의 점(소수점, 퍼센트 등)을 임시로 치환
+    const protected = text.replace(/(\d)\.(\d)/g, '$1〔DOT〕$2');
+    
+    // 문장 분리
+    const sentences = protected.match(/[^。！？.!?]+[。！？.!?]*/g) || [protected];
+    
+    // 임시 치환한 점 복원
+    return sentences.map(s => s.replace(/〔DOT〕/g, '.'));
 }
 
 /**
