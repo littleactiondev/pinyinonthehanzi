@@ -35,13 +35,33 @@
 
             <!-- 학습 모드 -->
             <div id="study-section" class="study-section" style="display: none;">
-                <div class="study-toolbar">
-                    <button id="pinyin-toggle-btn" class="btn-tool">병음</button>
-                    <button id="translate-toggle-btn" class="btn-tool">번역</button>
-                    <button id="speak-toggle-btn" class="btn-tool">🔊 재생</button>
-                    <button id="stop-speak-btn" class="btn-tool-stop" style="display: none;">⏹️ 정지</button>
+                <div class="study-header">
+                    <button id="back-btn" class="btn-back">← 뒤로</button>
+                    <div class="study-title">학습 모드</div>
+                    <div style="width: 60px;"></div>
                 </div>
+                
                 <div id="study-content" class="study-content"></div>
+                
+                <!-- 하단 고정 탭바 -->
+                <div class="study-toolbar">
+                    <button id="pinyin-toggle-btn" class="btn-tool">
+                        <span class="btn-tool-icon">📖</span>
+                        <span>병음</span>
+                    </button>
+                    <button id="translate-toggle-btn" class="btn-tool">
+                        <span class="btn-tool-icon">🌐</span>
+                        <span>번역</span>
+                    </button>
+                    <button id="speak-toggle-btn" class="btn-tool">
+                        <span class="btn-tool-icon">🔊</span>
+                        <span>재생</span>
+                    </button>
+                    <button id="stop-speak-btn" class="btn-tool-stop" style="display: none;">
+                        <span class="btn-tool-icon">⏹️</span>
+                        <span>정지</span>
+                    </button>
+                </div>
             </div>
 
             <!-- 뉴스 모달 -->

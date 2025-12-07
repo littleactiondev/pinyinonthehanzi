@@ -243,14 +243,19 @@ if (closeModal) {
 
 // 학습 모드 버튼들
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'pinyin-toggle-btn') {
+    const target = e.target.closest('button');
+    if (!target) return;
+    
+    if (target.id === 'pinyin-toggle-btn') {
         togglePinyin();
-    } else if (e.target.id === 'translate-toggle-btn') {
+    } else if (target.id === 'translate-toggle-btn') {
         toggleTranslation();
-    } else if (e.target.id === 'speak-toggle-btn') {
+    } else if (target.id === 'speak-toggle-btn') {
         toggleSpeak();
-    } else if (e.target.id === 'stop-speak-btn') {
+    } else if (target.id === 'stop-speak-btn') {
         stopSpeak();
+    } else if (target.id === 'back-btn') {
+        resetToHome();
     }
 });
 
