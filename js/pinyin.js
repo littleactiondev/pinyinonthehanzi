@@ -68,15 +68,6 @@ export function createPlainChineseHTML(chineseText) {
 }
 
 /**
- * HTML 이스케이프
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-/**
  * 중국어 텍스트를 병음과 함께 HTML로 변환 (문장별 번역 포함)
  * @param {string} chineseText - 중국어 텍스트
  * @param {string[]|null} translations - 번역 배열 (선택)
