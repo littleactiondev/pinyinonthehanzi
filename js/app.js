@@ -88,7 +88,7 @@ function toggleTranslation() {
 function toggleSpeak() {
     const { isSpeaking, isPaused } = getTTSState();
     const btn = document.getElementById('speak-toggle-btn');
-    const stopBtn = document.getElementById('stop-btn');
+    const stopBtn = document.getElementById('stop-speak-btn');
     
     if (isSpeaking && !isPaused) {
         pauseTTS(btn);
@@ -96,10 +96,24 @@ function toggleSpeak() {
     } else if (isPaused) {
         resumeTTS(btn);
         btn.textContent = '⏸️ 일시정지';
+        stopBtn.style.display = 'inline-block';
     } else {
         speakChinese(originalText, btn, stopBtn);
         btn.textContent = '⏸️ 일시정지';
+        stopBtn.style.display = 'inline-block';
     }
+}
+
+/**
+ * 재생 정지
+ */
+function stopSpeak() {
+    const btn = document.getElementById('speak-toggle-btn');
+    const stopBtn = document.getElementById('stop-speak-btn');
+    
+    stopTTS(btn, stopBtn);
+    btn.textContent = '🔊 재생';
+    stopBtn.style.display = 'none';
 }
 
 /**
@@ -235,6 +249,8 @@ document.addEventListener('click', (e) => {
         toggleTranslation();
     } else if (e.target.id === 'speak-toggle-btn') {
         toggleSpeak();
+    } else if (e.target.id === 'stop-speak-btn') {
+        stopSpeak();
     }
 });
 

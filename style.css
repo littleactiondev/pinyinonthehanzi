@@ -615,6 +615,23 @@ footer {
     border-color: #667eea;
 }
 
+.btn-tool-stop {
+    padding: 12px 20px;
+    background: white;
+    color: #ef4444;
+    border: 2px solid #ef4444;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-tool-stop:hover {
+    background: #ef4444;
+    color: white;
+}
+
 .study-content {
     background: linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%);
     padding: 28px;
