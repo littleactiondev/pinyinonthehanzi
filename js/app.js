@@ -210,14 +210,40 @@ function resetToHome() {
 }
 
 // 이벤트 리스너 등록
-pinyinBtn.addEventListener('click', togglePinyin);
-translateBtn.addEventListener('click', handleTranslate);
-clearTranslationBtn.addEventListener('click', clearTranslation);
-newsBtn.addEventListener('click', openNewsModal);
-closeModal.addEventListener('click', closeNewsModal);
+console.log('Setting up event listeners...');
+console.log('newsBtn exists:', !!newsBtn);
+
+if (pinyinBtn) {
+    pinyinBtn.addEventListener('click', togglePinyin);
+}
+
+if (translateBtn) {
+    translateBtn.addEventListener('click', handleTranslate);
+}
+
+if (clearTranslationBtn) {
+    clearTranslationBtn.addEventListener('click', clearTranslation);
+}
+
+if (newsBtn) {
+    console.log('Adding click listener to news button');
+    newsBtn.addEventListener('click', (e) => {
+        console.log('News button clicked!', e);
+        openNewsModal();
+    });
+} else {
+    console.error('newsBtn is null!');
+}
+
+if (closeModal) {
+    closeModal.addEventListener('click', closeNewsModal);
+}
 
 // 타이틀 클릭 시 홈으로
-document.getElementById('app-title').addEventListener('click', resetToHome);
+const appTitle = document.getElementById('app-title');
+if (appTitle) {
+    appTitle.addEventListener('click', resetToHome);
+}
 
 // 모달 외부 클릭 시 닫기
 newsModal.addEventListener('click', (e) => {
