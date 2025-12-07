@@ -1,7 +1,7 @@
 // 메인 애플리케이션 로직
 import { UI_TEXT } from './constants.js';
 import { translateSentences } from './translation.js';
-import { createPinyinHTML, createChineseOnlyHTML, splitIntoSentences } from './pinyin.js';
+import { createPinyinHTML, createChineseOnlyHTML, createPlainChineseHTML, splitIntoSentences } from './pinyin.js';
 import { speakChinese, pauseTTS, resumeTTS, stopTTS, getTTSState, cleanupTTS } from './tts.js';
 import { showError, hideError, showSection, createLoadingOverlay } from './ui.js';
 import { fetchChineseNews, createNewsHTML } from './news.js';
