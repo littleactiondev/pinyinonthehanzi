@@ -29,13 +29,7 @@
                 ></textarea>
                 <div class="button-group">
                     <button id="pinyin-btn" class="btn-primary">
-                        📖 병음 보기
-                    </button>
-                    <button id="speak-btn" class="btn-speak">
-                        🔊 재생
-                    </button>
-                    <button id="stop-btn" class="btn-stop" style="display: none;">
-                        ⏹️ 정지
+                        📖 읽기
                     </button>
                 </div>
             </div>
@@ -56,24 +50,25 @@
                 </div>
             </div>
 
-            <div class="output-section" id="output-section" style="display: none;">
-                <div class="section-header">
-                    <label>번역하기</label>
-                    <div class="translation-controls">
-                        <select id="target-lang" class="lang-select">
-                            <option value="ko">한국어</option>
-                            <option value="en">English</option>
-                            <option value="ja">日本語</option>
-                            <option value="es">Español</option>
-                            <option value="fr">Français</option>
-                            <option value="de">Deutsch</option>
-                            <option value="ru">Русский</option>
-                            <option value="pt">Português</option>
-                            <option value="it">Italiano</option>
-                            <option value="ar">العربية</option>
-                        </select>
-                        <button id="translate-btn" class="btn-secondary">번역</button>
-                        <button id="clear-translation-btn" class="btn-secondary" style="display: none;">번역 지우기</button>
+            <!-- 번역 언어 선택 모달 -->
+            <div id="translate-modal" class="translate-modal" style="display: none;">
+                <div class="translate-modal-content">
+                    <h3>번역 언어 선택</h3>
+                    <select id="target-lang" class="lang-select-large">
+                        <option value="ko">한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ru">Русский</option>
+                        <option value="pt">Português</option>
+                        <option value="it">Italiano</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                    <div class="modal-actions">
+                        <button id="confirm-translate-btn" class="btn-primary">번역하기</button>
+                        <button id="cancel-translate-btn" class="btn-secondary">취소</button>
                     </div>
                 </div>
             </div>

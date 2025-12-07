@@ -5,10 +5,15 @@ export const API_CONFIG = {
 };
 
 export const NEWS_CONFIG = {
-    RSS_FEED: 'http://www.people.com.cn/rss/world.xml', // 인민일보 국제뉴스
+    // 여러 RSS 소스 (하나 실패하면 다음 시도)
+    RSS_FEEDS: [
+        'https://cn.nytimes.com/rss/zh-hans/', // 뉴욕타임스 중문판
+        'https://feedx.net/rss/people.xml', // 인민일보 (프록시)
+        'https://rsshub.app/bbc/chinese', // BBC 중문
+    ],
     RSS_TO_JSON_API: 'https://api.rss2json.com/v1/api.json',
-    API_KEY: 'public', // 무료 버전
-    COUNT: 10, // 가져올 기사 수
+    API_KEY: 'public',
+    COUNT: 15,
 };
 
 export const TTS_CONFIG = {
@@ -24,7 +29,7 @@ export const UI_TEXT = {
         TRANSLATION_FAILED: '번역 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     },
     BUTTONS: {
-        PINYIN_SHOW: '📖 병음 보기',
+        PINYIN_SHOW: '📖 읽기',
         PINYIN_HIDE: '📝 원문 보기',
         SPEAK_PLAY: '🔊 재생',
         SPEAK_PAUSE: '⏸️ 일시정지',

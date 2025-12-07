@@ -72,39 +72,7 @@ function togglePinyin() {
     }
 }
 
-/**
- * TTS 재생/일시정지 토글
- */
-function toggleSpeak() {
-    const text = originalText || inputText.value.trim();
-    
-    if (!text) {
-        showError(errorDiv, UI_TEXT.ERRORS.NO_TEXT_FOR_SPEAK);
-        return;
-    }
-    
-    hideError(errorDiv);
-    
-    const { isSpeaking, isPaused } = getTTSState();
-    
-    if (isSpeaking && !isPaused) {
-        // 재생 중이면 일시정지
-        pauseTTS(speakBtn);
-    } else if (isPaused) {
-        // 일시정지 중이면 재개
-        resumeTTS(speakBtn);
-    } else {
-        // 정지 중이면 새로 재생
-        speakChinese(text, speakBtn, stopBtn);
-    }
-}
 
-/**
- * TTS 정지
- */
-function handleStop() {
-    stopTTS(speakBtn, stopBtn);
-}
 
 /**
  * 번역 실행
@@ -232,15 +200,10 @@ function resetToHome() {
     
     // 버튼 초기화
     pinyinBtn.textContent = UI_TEXT.BUTTONS.PINYIN_SHOW;
-    speakBtn.textContent = UI_TEXT.BUTTONS.SPEAK_PLAY;
-    stopBtn.style.display = 'none';
     clearTranslationBtn.style.display = 'none';
     
     // 출력 섹션 숨김
     outputSection.style.display = 'none';
-    
-    // TTS 정지
-    stopTTS(speakBtn, stopBtn);
     
     // 에러 숨김
     hideError(errorDiv);
@@ -248,8 +211,6 @@ function resetToHome() {
 
 // 이벤트 리스너 등록
 pinyinBtn.addEventListener('click', togglePinyin);
-speakBtn.addEventListener('click', toggleSpeak);
-stopBtn.addEventListener('click', handleStop);
 translateBtn.addEventListener('click', handleTranslate);
 clearTranslationBtn.addEventListener('click', clearTranslation);
 newsBtn.addEventListener('click', openNewsModal);
