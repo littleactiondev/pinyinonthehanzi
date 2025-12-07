@@ -261,11 +261,11 @@ inputText.addEventListener('keydown', (e) => {
 // 페이지 종료 시 TTS 정지
 window.addEventListener('beforeunload', cleanupTTS);
 
-// PWA 서비스 워커 등록
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('Service Worker 등록 완료'))
-            .catch((err) => console.log('Service Worker 등록 실패:', err));
-    });
-}
+// PWA 서비스 워커 등록 (로컬 개발 시 비활성화)
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//         navigator.serviceWorker.register('/sw.js')
+//             .then(() => console.log('Service Worker 등록 완료'))
+//             .catch((err) => console.log('Service Worker 등록 실패:', err));
+//     });
+// }
