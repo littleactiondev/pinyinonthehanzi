@@ -1,7 +1,7 @@
 // 상수 정의
 export const API_CONFIG = {
     TRANSLATION_URL: 'https://api.mymemory.translated.net/get',
-    TRANSLATION_DELAY: 300, // API 제한 방지 대기 시간 (ms)
+    TRANSLATION_DELAY: 200, // API 제한 방지 대기 시간 (ms) - 단축
 };
 
 export const NEWS_CONFIG = {
