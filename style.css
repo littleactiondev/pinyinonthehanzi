@@ -787,9 +787,11 @@ footer {
     .study-content {
         flex: 1;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         padding: 20px;
         padding-bottom: 100px;
         border-radius: 0;
+        overscroll-behavior: contain;
     }
     
     .study-toolbar {
