@@ -798,11 +798,12 @@ footer {
         top: 60px; /* 헤더 높이 */
         left: 0;
         right: 0;
-        bottom: 80px; /* 탭바 높이 */
+        bottom: 0;
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         padding: 20px;
+        padding-bottom: 100px; /* 탭바 높이 + 여유 */
         border-radius: 0;
         overscroll-behavior: contain;
     }
