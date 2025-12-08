@@ -681,7 +681,7 @@ footer {
 .btn-play-sentence {
     position: absolute;
     top: 50%;
-    right: -50px;
+    right: 8px;
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
@@ -695,6 +695,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .btn-play-sentence:hover {
