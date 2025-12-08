@@ -267,15 +267,33 @@ document.addEventListener('click', (e) => {
         // 문장별 듣기
         const text = target.getAttribute('data-text');
         if (text) {
-            playSentence(text);
+            playSentence(text, target);
         }
     }
 });
 
+// 현재 재생 중인 문장 버튼 추적
+let currentPlayingButton = null;
+
 /**
- * 개별 문장 재생
+ * 개별 문장 재생/정지 토글
  */
-function playSentence(text) {
+function playSentence(text, button) {
+    // 같은 버튼을 다시 누르면 정지
+    if (currentPlayingButton === button && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        button.textContent = '🔊';
+        button.classList.remove('playing');
+        currentPlayingButton = null;
+        return;
+    }
+    
+    // 다른 문장이 재생 중이면 정지
+    if (currentPlayingButton) {
+        currentPlayingButton.textContent = '🔊';
+        currentPlayingButton.classList.remove('playing');
+    }
+    
     window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
@@ -283,7 +301,24 @@ function playSentence(text) {
     utterance.rate = 0.8;
     utterance.pitch = 1;
     
+    // 재생 완료 시
+    utterance.onend = () => {
+        button.textContent = '🔊';
+        button.classList.remove('playing');
+        currentPlayingButton = null;
+    };
+    
+    // 에러 시
+    utterance.onerror = () => {
+        button.textContent = '🔊';
+        button.classList.remove('playing');
+        currentPlayingButton = null;
+    };
+    
     window.speechSynthesis.speak(utterance);
+    button.textContent = '⏸️';
+    button.classList.add('playing');
+    currentPlayingButton = button;
 }
 
 // 타이틀 클릭 시 홈으로
