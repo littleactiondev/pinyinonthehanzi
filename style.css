@@ -808,7 +808,7 @@ footer {
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         padding: 20px;
-        padding-bottom: 100px; /* 탭바 높이 + 여유 */
+        padding-bottom: 120px; /* 탭바 높이 + 충분한 여유 */
         border-radius: 0;
         overscroll-behavior: contain;
     }
