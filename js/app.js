@@ -210,25 +210,26 @@ function closeNewsModal() {
 function resetToHome() {
     // 입력 초기화
     inputText.value = '';
-    inputText.style.display = 'block';
     
-    // 병음 디스플레이 제거
-    const pinyinDisplay = document.getElementById('pinyin-display');
-    if (pinyinDisplay) {
-        pinyinDisplay.remove();
+    // 모바일 body 스크롤 복원
+    document.body.classList.remove('study-mode-active');
+    
+    // 입력 섹션 표시
+    document.querySelector('.input-section').style.display = 'block';
+    
+    // 학습 섹션 숨김
+    const studySection = document.getElementById('study-section');
+    if (studySection) {
+        studySection.style.display = 'none';
     }
     
     // 상태 초기화
-    showingPinyin = false;
     originalText = '';
     currentTranslations = null;
+    studyMode = { showPinyin: false, showTranslation: false, isPlaying: false };
     
-    // 버튼 초기화
-    pinyinBtn.textContent = UI_TEXT.BUTTONS.PINYIN_SHOW;
-    clearTranslationBtn.style.display = 'none';
-    
-    // 출력 섹션 숨김
-    outputSection.style.display = 'none';
+    // TTS 정지
+    window.speechSynthesis.cancel();
     
     // 에러 숨김
     hideError(errorDiv);
