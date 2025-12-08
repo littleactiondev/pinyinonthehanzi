@@ -631,12 +631,13 @@ footer {
 }
 
 .sentence-line {
-    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
     font-size: 1em;
     line-height: 2.2;
     margin-bottom: 20px;
     padding: 16px;
-    padding-right: 60px;
     border-bottom: 1px solid #f3f4f6;
     background: #fafafa;
     border-radius: 8px;
@@ -652,14 +653,15 @@ footer {
 }
 
 .sentence-text {
+    flex: 1;
     font-size: 1em;
+    min-width: 0;
 }
 
 .sentence-block {
     position: relative;
     margin-bottom: 24px;
     padding: 16px;
-    padding-right: 60px;
     background: #fafafa;
     border-radius: 8px;
     transition: background 0.2s;
@@ -670,21 +672,22 @@ footer {
 }
 
 .sentence-with-play {
-    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 }
 
 .sentence-text-pinyin {
+    flex: 1;
     font-size: 1em;
     line-height: 2.4;
+    min-width: 0;
 }
 
 .btn-play-sentence {
-    position: absolute;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
     width: 40px;
     height: 40px;
+    min-width: 40px;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     border: none;
     border-radius: 50%;
@@ -696,15 +699,16 @@ footer {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-top: 4px;
 }
 
 .btn-play-sentence:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .btn-play-sentence:active {
-    transform: translateY(-50%) scale(0.95);
+    transform: scale(0.95);
 }
 
 .btn-play-sentence.playing {
@@ -808,8 +812,8 @@ footer {
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
-        padding: 20px;
-        padding-bottom: 120px; /* 탭바 높이 + 충분한 여유 */
+        padding: 16px;
+        padding-bottom: 140px; /* 탭바 높이 + 충분한 여유 */
         border-radius: 0;
         overscroll-behavior: contain;
     }
