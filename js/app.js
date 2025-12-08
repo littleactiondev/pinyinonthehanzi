@@ -43,6 +43,9 @@ function startStudy() {
     // 입력 섹션 숨기기
     document.querySelector('.input-section').style.display = 'none';
     
+    // 모바일에서 body 스크롤 방지
+    document.body.classList.add('study-mode-active');
+    
     // 학습 섹션 표시
     const studySection = document.getElementById('study-section');
     const studyContent = document.getElementById('study-content');
@@ -50,6 +53,9 @@ function startStudy() {
     
     // 초기 상태: 병음 없이 중국어만 표시
     studyContent.innerHTML = createPlainChineseHTML(text);
+    
+    // 맨 위로 스크롤
+    studyContent.scrollTop = 0;
     
     // 상태 초기화
     studyMode = { showPinyin: false, showTranslation: false, isPlaying: false };

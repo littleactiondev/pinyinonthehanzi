@@ -767,6 +767,13 @@ footer {
 
 /* 모바일 버전: 하단 고정 탭바 */
 @media (max-width: 768px) {
+    body.study-mode-active {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    
     .study-section {
         position: fixed;
         top: 0;
@@ -778,20 +785,26 @@ footer {
         display: flex;
         flex-direction: column;
         margin-top: 0;
+        height: 100vh;
+        height: 100dvh; /* 동적 뷰포트 높이 */
     }
     
     .study-header {
         border-radius: 0;
+        flex-shrink: 0;
     }
     
     .study-content {
         flex: 1;
-        overflow-y: auto;
+        overflow-y: scroll;
+        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         padding: 20px;
         padding-bottom: 100px;
         border-radius: 0;
-        overscroll-behavior: contain;
+        overscroll-behavior-y: contain;
+        position: relative;
+        min-height: 0;
     }
     
     .study-toolbar {
