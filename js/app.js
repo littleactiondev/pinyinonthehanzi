@@ -105,6 +105,7 @@ async function toggleSpeak() {
         stopBtn.style.display = 'inline-block';
     } else {
         await requestWakeLock(); // 화면 꺼짐 방지
+        setupMediaSession('전체 텍스트'); // Media Session 설정
         speakChinese(originalText, btn, stopBtn);
         btn.textContent = '⏸️ 일시정지';
         stopBtn.style.display = 'inline-block';
@@ -312,6 +313,33 @@ async function releaseWakeLock() {
 }
 
 /**
+ * Media Session 설정 (백그라운드 재생 지원)
+ */
+function setupMediaSession(title) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title || '중국어 학습',
+            artist: '병음 학습기',
+            album: '중국어 TTS',
+        });
+        
+        navigator.mediaSession.setActionHandler('play', () => {
+            window.speechSynthesis.resume();
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', () => {
+            window.speechSynthesis.pause();
+        });
+        
+        navigator.mediaSession.setActionHandler('stop', () => {
+            window.speechSynthesis.cancel();
+        });
+        
+        console.log('Media Session configured');
+    }
+}
+
+/**
  * 개별 문장 재생/정지 토글
  */
 async function playSentence(text, button) {
@@ -333,6 +361,7 @@ async function playSentence(text, button) {
     
     window.speechSynthesis.cancel();
     await requestWakeLock(); // 화면 꺼짐 방지
+    setupMediaSession(text.substring(0, 30)); // Media Session 설정
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
