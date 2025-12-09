@@ -91,7 +91,7 @@ function toggleTranslation() {
 /**
  * 재생 토글
  */
-function toggleSpeak() {
+async function toggleSpeak() {
     const { isSpeaking, isPaused } = getTTSState();
     const btn = document.getElementById('speak-toggle-btn');
     const stopBtn = document.getElementById('stop-speak-btn');
@@ -104,6 +104,7 @@ function toggleSpeak() {
         btn.textContent = '⏸️ 일시정지';
         stopBtn.style.display = 'inline-block';
     } else {
+        await requestWakeLock(); // 화면 꺼짐 방지
         speakChinese(originalText, btn, stopBtn);
         btn.textContent = '⏸️ 일시정지';
         stopBtn.style.display = 'inline-block';
@@ -113,13 +114,15 @@ function toggleSpeak() {
 /**
  * 재생 정지
  */
-function stopSpeak() {
+async function stopSpeak() {
     const btn = document.getElementById('speak-toggle-btn');
     const stopBtn = document.getElementById('stop-speak-btn');
     
     stopTTS(btn, stopBtn);
     btn.textContent = '🔊 재생';
     stopBtn.style.display = 'none';
+    
+    await releaseWakeLock(); // Wake Lock 해제
 }
 
 /**
@@ -274,17 +277,51 @@ document.addEventListener('click', (e) => {
 
 // 현재 재생 중인 문장 버튼 추적
 let currentPlayingButton = null;
+let wakeLock = null;
+
+/**
+ * Wake Lock 요청 (화면 꺼짐 방지)
+ */
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock activated');
+            
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock released');
+            });
+        }
+    } catch (err) {
+        console.error('Wake Lock error:', err);
+    }
+}
+
+/**
+ * Wake Lock 해제
+ */
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+        } catch (err) {
+            console.error('Wake Lock release error:', err);
+        }
+    }
+}
 
 /**
  * 개별 문장 재생/정지 토글
  */
-function playSentence(text, button) {
+async function playSentence(text, button) {
     // 같은 버튼을 다시 누르면 정지
     if (currentPlayingButton === button && window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
         button.textContent = '🔊';
         button.classList.remove('playing');
         currentPlayingButton = null;
+        await releaseWakeLock();
         return;
     }
     
@@ -295,6 +332,7 @@ function playSentence(text, button) {
     }
     
     window.speechSynthesis.cancel();
+    await requestWakeLock(); // 화면 꺼짐 방지
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
@@ -302,17 +340,19 @@ function playSentence(text, button) {
     utterance.pitch = 1;
     
     // 재생 완료 시
-    utterance.onend = () => {
+    utterance.onend = async () => {
         button.textContent = '🔊';
         button.classList.remove('playing');
         currentPlayingButton = null;
+        await releaseWakeLock();
     };
     
     // 에러 시
-    utterance.onerror = () => {
+    utterance.onerror = async () => {
         button.textContent = '🔊';
         button.classList.remove('playing');
         currentPlayingButton = null;
+        await releaseWakeLock();
     };
     
     window.speechSynthesis.speak(utterance);
